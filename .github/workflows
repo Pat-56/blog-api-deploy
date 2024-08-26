@@ -1,0 +1,32 @@
+name: Deploy to Heroku
+
+on:
+  push:
+    branches:
+      - main  # Déclenche l'action uniquement sur les pushs vers la branche 'main'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18.x'  # Assurez-vous que la version correspond à celle que vous utilisez localement
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build the app
+        run: npm run build  # Assurez-vous que ce script existe dans votre package.json
+
+      - name: Deploy to Heroku
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+        run: |
+          git remote add heroku https://git.heroku.com/<your-heroku-app-name>.git
+          git push heroku main
