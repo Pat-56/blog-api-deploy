@@ -46,7 +46,7 @@ jobs:
   # Job 3 : Build
   build:
     runs-on: ubuntu-latest
-    needs: [unit_tests, integration_tests]  # Ce job ne s'exécute que si les tests ont réussi
+    needs: [e2e_tests]  # Ce job ne s'exécute que si les tests ont réussi
     steps:
       - name: Checkout code
         uses: actions/checkout@v4.1.6
