@@ -12,11 +12,11 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4.1.6
-
+      
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20' # Force l'utilisation de Node.js 20
+          node-version: '20'  # Force l'utilisation de Node.js 20
 
       - name: Install dependencies
         run: npm install
@@ -24,6 +24,7 @@ jobs:
       - name: Run ESLint
         run: npm run lint
 
+  # Job 2 : Tests unitaires
   e2e_tests:
     runs-on: ubuntu-latest
     needs: lint  # Ce job ne s'exécute que si le linting a réussi
@@ -39,5 +40,46 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Run e2e Tests
+      - name: Run Unit Tests
         run: npm run test:e2e  # Assurez-vous que ce script est défini dans votre package.json
+
+  # Job 3 : Build
+  build:
+    runs-on: ubuntu-latest
+    needs: [unit_tests, integration_tests]  # Ce job ne s'exécute que si les tests ont réussi
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4.1.6
+      
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'  # Force l'utilisation de Node.js 20
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build the application
+        run: npm run build
+
+  # Job 4 : Déploiement sur Heroku
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build  # Ce job ne s'exécute que si le job build a réussi
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4.1.6
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'  # Force l'utilisation de Node.js 20
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Deploy to Heroku
+        uses: akshat/gh-actions-heroku@v1.0.1
+        with:
+          api_key: ${{ secrets.HEROKU_API_KEY }}
+          app_name: ${{ secrets.HEROKU_APP_NAME }}
