@@ -100,5 +100,6 @@ jobs:
       - name: Deploy to Heroku
         uses: akshat/gh-actions-heroku@v1.0.1
         with:
-          api_key: ${{ secrets.HEROKU_API_KEY }}
-          app_name: ${{ secrets.HEROKU_APP_NAME }}
+          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
+          heroku_app_name: "blog-api-deploy"  # Set this to your Heroku app name
+          heroku_email: "patrick81.dev@gmail.com"  # Set this to your Heroku account email
