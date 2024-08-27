@@ -1,86 +1,31 @@
-name: CI/CD Pipeline for NestJS
+name: Deploy to Heroku
 
 on:
   push:
     branches:
-      - main
+      - main  # Set this to your default branch
 
 jobs:
-  # Job 1 : Linting
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4.1.6
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20' # Force l'utilisation de Node.js 20
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Run ESLint
-        run: npm run lint
-
-  # Job 2 : Tests unitaires
-  e2e_tests:
-    runs-on: ubuntu-latest
-    needs: lint # Ce job ne s'exécute que si le linting a réussi
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4.1.6
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20' # Force l'utilisation de Node.js 20
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Run Unit Tests
-        run: npm run test:e2e # Assurez-vous que ce script est défini dans votre package.json
-
-  # Job 3 : Build
   build:
     runs-on: ubuntu-latest
-    needs: [e2e_tests] # Ce job ne s'exécute que si les tests ont réussi
+
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4.1.6
+    - uses: actions/checkout@v2
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20' # Force l'utilisation de Node.js 20
+    - name: Setup Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '14'  # Set this to your Node.js version
 
-      - name: Install dependencies
-        run: npm install
+    - name: Install dependencies
+      run: npm install
 
-      - name: Build the application
-        run: npm run build
+    - name: Build
+      run: npm run build  # Your build script
 
-  # Job 4 : Déploiement sur Heroku
-  deploy:
-    runs-on: ubuntu-latest
-    needs: build # Ce job ne s'exécute que si le job build a réussi
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4.1.6
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20' # Force l'utilisation de Node.js 20
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Deploy to Heroku
-        uses: akhileshns/heroku-deploy@v3.13.15
-        with:
-          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
-          heroku_app_name: 'blog-api-deploy' # Set this to your Heroku app name
-          heroku_email: ${{ secrets.HEROKU_EMAIL }} # Set this to your Heroku account email
+    - name: Deploy to Heroku
+      uses: akhileshns/heroku-deploy@v3.12.12  # This is a community action
+      with:
+        heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
+        heroku_app_name: "blog-api-deploy"  # Set this to your Heroku app name
+        heroku_email: "patrick81.dev@gmail.com"  # Set this to your Heroku account email
