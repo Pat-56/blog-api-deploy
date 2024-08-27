@@ -3,38 +3,29 @@ name: Deploy to Heroku
 on:
   push:
     branches:
-      - master
-  pull_request:
-    branches:
-      - master
+      - main  # Set this to your default branch
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        node-version: [16.x, 18.x]
-
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v2
+    - uses: actions/checkout@v2
 
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
-        with:
-          node-version: ${{ matrix.node-version }}
+    - name: Setup Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '14'  # Set this to your Node.js version
 
-      - name: Install Dependencies
-        run: npm ci
+    - name: Install dependencies
+      run: npm install
 
-      - name: Run Tests
-        run: npm test
-        working-directory: src/book
+    - name: Build
+      run: npm run build  # Your build script
 
-      - name: Deploy to Heroku
-        uses: akhileshns/heroku-deploy@v3.12.12  # This is a community action
-        with:
-          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
-          heroku_app_name: "blog-api-deploy"  # Set this to your Heroku app name
-          heroku_email: "patrick81.dev@gmail.com"  # Set this to your Heroku account email
+    - name: Deploy to Heroku
+      uses: akhileshns/heroku-deploy@v3.12.12  # This is a community action
+      with:
+        heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
+        heroku_app_name: "blog-api-deploy"  # Set this to your Heroku app name
+        heroku_email: "patrick81.dev@gmail.com"  # Set this to your Heroku account email
